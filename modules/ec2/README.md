@@ -1,6 +1,10 @@
 <!-- BEGIN_TF_DOCS -->
 
 
+## Important Notes
+
+Please ensure that your Terraform environment is properly configured before using this module.
+
 ## Requirements
 
 | Name | Version |

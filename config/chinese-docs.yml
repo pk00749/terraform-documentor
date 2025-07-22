@@ -19,6 +19,10 @@ content: |-
   
   此模块提供了{{ .Header | regexReplaceAll "^#\\s*" "" | lower }}的完整实现。
 
+  ## ⚠️ 注意事项
+
+  请先确认已配置Terraform环境。
+
   ## ⚙️ 技术要求
 
   {{ .Requirements }}

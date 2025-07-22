@@ -15,6 +15,10 @@ sections:
 content: |-
   {{ .Header }}
 
+  ## Important Notes
+
+  Please ensure that your Terraform environment is properly configured before using this module.
+
   {{ .Requirements }}
 
   {{ .Providers }}
