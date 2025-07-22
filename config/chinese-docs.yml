@@ -1,0 +1,85 @@
+formatter: "markdown document"
+
+version: ""
+
+header-from: main.tf
+footer-from: ""
+
+recursive:
+  enabled: false
+
+sections:
+  hide: []
+  show: []
+
+content: |-
+  {{ .Header }}
+  
+  ## 📋 模块概述
+  
+  此模块提供了{{ .Header | regexReplaceAll "^#\\s*" "" | lower }}的完整实现。
+
+  ## ⚙️ 技术要求
+
+  {{ .Requirements }}
+
+  ## 🔌 提供商配置
+
+  {{ .Providers }}
+
+  ## 📦 子模块
+
+  {{ .Modules }}
+
+  ## 🏗️ 资源清单
+
+  {{ .Resources }}
+
+  ## 📥 输入参数
+
+  {{ .Inputs }}
+
+  ## 📤 输出结果
+
+  {{ .Outputs }}
+  
+  ## 🚀 使用示例
+  
+  ```hcl
+  module "example" {
+    source = "./path/to/this/module"
+    
+    # 在这里添加必需的变量
+  }
+  ```
+
+output:
+  file: "README.md"
+  mode: replace
+  template: |-
+    <!-- BEGIN_TF_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_DOCS -->
+
+output-values:
+  enabled: false
+  from: ""
+
+sort:
+  enabled: true
+  by: name
+
+settings:
+  anchor: true
+  color: true
+  default: true
+  description: true
+  escape: true
+  hide-empty: false
+  html: true
+  indent: 2
+  lockfile: true
+  read-comments: true
+  required: true
+  sensitive: true
+  type: true
