@@ -1,54 +1,27 @@
-# Terraform Modules 项目
+# Terraform Modules Documentation Project / Terraform 模块文档项目
 
-这个项目包含多个可重用的 Terraform 模块，用于在 AWS 上构建基础设施。
+## Available Modules / 可用模块
 
-## 模块列表
+**English**:
 
-- `modules/vpc` - VPC 网络基础设施
-- `modules/security-group` - 安全组管理
-- `modules/ec2` - EC2 实例部署
-- `modules/rds` - RDS 数据库实例
-- `modules/s3` - S3 存储桶
+| Module | Description | Inputs | Outputs | Resources | Status |
+|--------|-------------|---------|---------|-----------|--------|
+| [ec2](modules/ec2/) | AWS EC2 instance management with configurable settings | 19 | 8 | 4 | ✅ Active |
+| [rds](modules/rds/) | AWS RDS database instances with backup and monitoring | 31 | 10 | 4 | ✅ Active |
+| [s3](modules/s3/) | AWS S3 bucket configuration with security policies | 15 | 7 | 8 | ✅ Active |
+| [security-group](modules/security-group/) | AWS Security Group rules and configurations | 9 | 7 | 3 | ✅ Active |
+| [vpc](modules/vpc/) | AWS VPC networking with subnets and routing | 9 | 13 | 10 | ✅ Active |
 
-## 使用示例
+**中文**:
 
-```hcl
-# 使用所有模块创建完整的基础设施
-module "vpc" {
-  source = "./modules/vpc"
-  
-  vpc_name = "production-vpc"
-  vpc_cidr = "10.0.0.0/16"
-  # ... 其他配置
-}
+| 模块名称 | 描述 | 输入参数 | 输出参数 | 资源数量 | 状态 |
+|----------|------|----------|----------|----------|------|
+| [ec2](modules/ec2/) | EC2 实例模块 | 19 | 8 | 4 | ✅ 可用 |
+| [rds](modules/rds/) | RDS 数据库模块 | 31 | 10 | 4 | ✅ 可用 |
+| [s3](modules/s3/) | S3 存储桶模块 | 15 | 7 | 8 | ✅ 可用 |
+| [security-group](modules/security-group/) | Security Group 模块 | 9 | 7 | 3 | ✅ 可用 |
+| [vpc](modules/vpc/) | AWS VPC 模块 | 9 | 13 | 10 | ✅ 可用 |
 
-module "security_group" {
-  source = "./modules/security-group"
-  
-  vpc_id = module.vpc.vpc_id
-  # ... 其他配置
-}
+---
 
-module "ec2" {
-  source = "./modules/ec2"
-  
-  vpc_id            = module.vpc.vpc_id
-  subnet_id         = module.vpc.public_subnet_ids[0]
-  security_group_id = module.security_group.web_sg_id
-  # ... 其他配置
-}
-```
-
-## 文档生成
-
-使用以下命令为所有模块生成文档：
-
-```bash
-./generate-docs.sh
-```
-
-或者为特定模块生成文档：
-
-```bash
-./generate-docs.sh modules/vpc
-```
+**Last Updated / 最后更新**: 2025-07-23
