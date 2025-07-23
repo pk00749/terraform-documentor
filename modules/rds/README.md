@@ -1,31 +1,31 @@
 <!-- BEGIN_TF_DOCS -->
 
 
-## Important Notes
+## 📋 Module Overview
+This module provides a complete implementation of .
 
-Please ensure that your Terraform environment is properly configured before using this module.
+## ⚠️ Caution
 
-## Requirements
+Please confirm that you have configured the Terraform environment.
+
+## ⚙️ Requirements
+
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~>5.0 |
 
-## Providers
+## 🔌 Providers
+
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 ~>5.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~>5.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
-## Modules
+## 🏗️ Resources
 
-No modules.
-
-## Resources
 
 | Name | Type |
 |------|------|
@@ -34,7 +34,8 @@ No modules.
 | [aws_db_subnet_group.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group) | resource |
 | [random_password.master_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 
-## Inputs
+## 📥 Inputs
+
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -70,7 +71,8 @@ No modules.
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | 数据库子网 ID 列表 | `list(string)` | n/a | yes |
 | <a name="input_tags"></a> [tags](#input\_tags) | 要应用到所有资源的标签映射 | `map(string)` | `{}` | no |
 
-## Outputs
+## 📤 Outputs
+
 
 | Name | Description |
 |------|-------------|
@@ -84,4 +86,8 @@ No modules.
 | <a name="output_db_subnet_group_id"></a> [db\_subnet\_group\_id](#output\_db\_subnet\_group\_id) | 数据库子网组 ID |
 | <a name="output_generated_password"></a> [generated\_password](#output\_generated\_password) | 生成的主用户密码（如果使用随机密码） |
 | <a name="output_master_username"></a> [master\_username](#output\_master\_username) | 主用户名 |
+
+## Notes
+
+Please ensure that you have configured the Terraform environment before using this module.
 <!-- END_TF_DOCS -->

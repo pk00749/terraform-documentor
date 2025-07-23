@@ -1,30 +1,30 @@
 <!-- BEGIN_TF_DOCS -->
 
 
-## Important Notes
+## 📋 Module Overview
+This module provides a complete implementation of .
 
-Please ensure that your Terraform environment is properly configured before using this module.
+## ⚠️ Caution
 
-## Requirements
+Please confirm that you have configured the Terraform environment.
+
+## ⚙️ Requirements
+
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~>5.0 |
 
-## Providers
+## 🔌 Providers
+
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 ~>5.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~>5.0 |
 
-## Modules
+## 🏗️ Resources
 
-No modules.
-
-## Resources
 
 | Name | Type |
 |------|------|
@@ -33,7 +33,8 @@ No modules.
 | [aws_key_pair.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/key_pair) | resource |
 | [aws_ami.amazon_linux](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ami) | data source |
 
-## Inputs
+## 📥 Inputs
+
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -57,7 +58,8 @@ No modules.
 | <a name="input_tags"></a> [tags](#input\_tags) | 要应用到所有资源的标签映射 | `map(string)` | `{}` | no |
 | <a name="input_user_data"></a> [user\_data](#input\_user\_data) | 实例启动时执行的用户数据脚本 | `string` | `""` | no |
 
-## Outputs
+## 📤 Outputs
+
 
 | Name | Description |
 |------|-------------|
@@ -69,4 +71,8 @@ No modules.
 | <a name="output_private_ips"></a> [private\_ips](#output\_private\_ips) | EC2 实例私有 IP 地址列表 |
 | <a name="output_public_ips"></a> [public\_ips](#output\_public\_ips) | EC2 实例公网 IP 地址列表 |
 | <a name="output_security_group_ids"></a> [security\_group\_ids](#output\_security\_group\_ids) | 关联的安全组 ID 列表 |
+
+## Notes
+
+Please ensure that you have configured the Terraform environment before using this module.
 <!-- END_TF_DOCS -->

@@ -1,30 +1,30 @@
 <!-- BEGIN_TF_DOCS -->
 
 
-## Important Notes
+## 📋 Module Overview
+This module provides a complete implementation of .
 
-Please ensure that your Terraform environment is properly configured before using this module.
+## ⚠️ Caution
 
-## Requirements
+Please confirm that you have configured the Terraform environment.
+
+## ⚙️ Requirements
+
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~>5.0 |
 
-## Providers
+## 🔌 Providers
+
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 ~>5.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~>5.0 |
 
-## Modules
+## 🏗️ Resources
 
-No modules.
-
-## Resources
 
 | Name | Type |
 |------|------|
@@ -32,7 +32,8 @@ No modules.
 | [aws_security_group.database](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_security_group.web](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 
-## Inputs
+## 📥 Inputs
+
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -46,7 +47,8 @@ No modules.
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID，安全组将在此 VPC 中创建 | `string` | n/a | yes |
 | <a name="input_web_ingress_cidrs"></a> [web\_ingress\_cidrs](#input\_web\_ingress\_cidrs) | 允许访问 Web 服务器的 CIDR 块列表 | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
 
-## Outputs
+## 📤 Outputs
+
 
 | Name | Description |
 |------|-------------|
@@ -57,4 +59,8 @@ No modules.
 | <a name="output_database_sg_id"></a> [database\_sg\_id](#output\_database\_sg\_id) | 数据库安全组的 ID |
 | <a name="output_web_sg_arn"></a> [web\_sg\_arn](#output\_web\_sg\_arn) | Web 服务器安全组的 ARN |
 | <a name="output_web_sg_id"></a> [web\_sg\_id](#output\_web\_sg\_id) | Web 服务器安全组的 ID |
+
+## Notes
+
+Please ensure that you have configured the Terraform environment before using this module.
 <!-- END_TF_DOCS -->

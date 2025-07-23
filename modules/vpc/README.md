@@ -1,30 +1,30 @@
 <!-- BEGIN_TF_DOCS -->
 
 
-## Important Notes
+## 📋 Module Overview
+This module provides a complete implementation of .
 
-Please ensure that your Terraform environment is properly configured before using this module.
+## ⚠️ Caution
 
-## Requirements
+Please confirm that you have configured the Terraform environment.
+
+## ⚙️ Requirements
+
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 
-## Providers
+## 🔌 Providers
+
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 ~> 5.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 |
 
-## Modules
+## 🏗️ Resources
 
-No modules.
-
-## Resources
 
 | Name | Type |
 |------|------|
@@ -39,7 +39,8 @@ No modules.
 | [aws_subnet.public](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet) | resource |
 | [aws_vpc.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc) | resource |
 
-## Inputs
+## 📥 Inputs
+
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -53,7 +54,8 @@ No modules.
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | VPC 的 CIDR 块 | `string` | `"10.0.0.0/16"` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | VPC 的名称 | `string` | `"main-vpc"` | no |
 
-## Outputs
+## 📤 Outputs
+
 
 | Name | Description |
 |------|-------------|
@@ -70,4 +72,8 @@ No modules.
 | <a name="output_vpc_arn"></a> [vpc\_arn](#output\_vpc\_arn) | VPC 的 ARN |
 | <a name="output_vpc_cidr_block"></a> [vpc\_cidr\_block](#output\_vpc\_cidr\_block) | VPC 的 CIDR 块 |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | VPC 的 ID |
+
+## Notes
+
+Please ensure that you have configured the Terraform environment before using this module.
 <!-- END_TF_DOCS -->

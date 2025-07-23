@@ -1,30 +1,30 @@
 <!-- BEGIN_TF_DOCS -->
 
 
-## Important Notes
+## 📋 Module Overview
+This module provides a complete implementation of .
 
-Please ensure that your Terraform environment is properly configured before using this module.
+## ⚠️ Caution
 
-## Requirements
+Please confirm that you have configured the Terraform environment.
+
+## ⚙️ Requirements
+
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~>5.0 |
 
-## Providers
+## 🔌 Providers
+
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.0 ~>5.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~>5.0 |
 
-## Modules
+## 🏗️ Resources
 
-No modules.
-
-## Resources
 
 | Name | Type |
 |------|------|
@@ -37,7 +37,8 @@ No modules.
 | [aws_s3_bucket_server_side_encryption_configuration.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_server_side_encryption_configuration) | resource |
 | [aws_s3_bucket_versioning.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) | resource |
 
-## Inputs
+## 📥 Inputs
+
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
@@ -57,7 +58,8 @@ No modules.
 | <a name="input_tags"></a> [tags](#input\_tags) | 要应用到所有资源的标签映射 | `map(string)` | `{}` | no |
 | <a name="input_topic_notifications"></a> [topic\_notifications](#input\_topic\_notifications) | SNS 主题通知配置列表 | <pre>list(object({<br/>    topic_arn     = string<br/>    events        = list(string)<br/>    filter_prefix = string<br/>    filter_suffix = string<br/>  }))</pre> | `[]` | no |
 
-## Outputs
+## 📤 Outputs
+
 
 | Name | Description |
 |------|-------------|
@@ -68,4 +70,8 @@ No modules.
 | <a name="output_bucket_region"></a> [bucket\_region](#output\_bucket\_region) | S3 存储桶区域 |
 | <a name="output_bucket_regional_domain_name"></a> [bucket\_regional\_domain\_name](#output\_bucket\_regional\_domain\_name) | S3 存储桶区域域名 |
 | <a name="output_bucket_versioning_status"></a> [bucket\_versioning\_status](#output\_bucket\_versioning\_status) | 存储桶版本控制状态 |
+
+## Notes
+
+Please ensure that you have configured the Terraform environment before using this module.
 <!-- END_TF_DOCS -->
