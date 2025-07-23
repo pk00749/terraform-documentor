@@ -1,16 +1,6 @@
 # EC2 实例模块
 # 创建 EC2 实例和相关资源
 
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
 # 获取最新的 Amazon Linux 2 AMI
 data "aws_ami" "amazon_linux" {
   most_recent = true

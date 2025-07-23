@@ -1,16 +1,6 @@
 # Security Group 模块
 # 创建常用的安全组配置
 
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
 # Web 服务器安全组
 resource "aws_security_group" "web" {
   name_prefix = "${var.name_prefix}-web-"

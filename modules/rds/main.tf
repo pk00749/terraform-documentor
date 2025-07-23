@@ -1,16 +1,6 @@
 # RDS 数据库模块
 # 创建 RDS 实例和相关资源
 
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-  }
-}
-
 # 随机密码生成
 resource "random_password" "master_password" {
   count = var.manage_master_user_password ? 0 : 1
