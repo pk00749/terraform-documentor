@@ -13,6 +13,7 @@ import subprocess
 import argparse
 import glob
 from pathlib import Path
+import re
 
 
 class Colors:
@@ -119,6 +120,33 @@ class TerraformDocsGenerator:
 
         self.print_emoji("✅", "本地配置文件清理完成", Colors.OKGREEN)
 
+    def remove_duplicate_headers(self, readme_path):
+        """移除文档中的重复标题"""
+        try:
+            with open(readme_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+
+            # 移除重复的标题，保留带emoji的版本
+            patterns_to_remove = [
+                r'\n## Requirements\n',
+                r'\n## Providers\n',
+                r'\n## Modules\n',
+                r'\n## Resources\n',
+                r'\n## Inputs\n',
+                r'\n## Outputs\n'
+            ]
+
+            for pattern in patterns_to_remove:
+                content = re.sub(pattern, '\n', content)
+
+            # 写回文件
+            with open(readme_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+
+        except Exception as e:
+            # 如果后处理失败，不影响主要功能
+            pass
+
     def generate_module_docs(self, module_path):
         """为单个模块生成文档"""
         module_name = os.path.basename(module_path)
@@ -140,6 +168,11 @@ class TerraformDocsGenerator:
             ], capture_output=True, text=True, timeout=60)
 
             if result.returncode == 0:
+                # 后处理：移除重复标题
+                readme_path = os.path.join(module_path, 'README.md')
+                if os.path.exists(readme_path):
+                    self.remove_duplicate_headers(readme_path)
+
                 self.print_emoji("✅", f"{module_name} 文档生成成功", Colors.OKGREEN)
                 return True
             else:
