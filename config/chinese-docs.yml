@@ -31,10 +31,6 @@ content: |-
 
   {{ .Providers }}
 
-  ## 📦 子模块
-
-  {{ .Modules }}
-
   ## 🏗️ 资源清单
 
   {{ .Resources }}
