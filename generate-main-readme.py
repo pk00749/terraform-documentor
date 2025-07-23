@@ -33,7 +33,7 @@ class MainReadmeGenerator:
         self.modules_dir = modules_dir
         self.output_file = output_file
         self.project_info = {
-            "name": "Terraform Modules Documentation Project",
+            "name": "Terraform Share Modules",
             "description": "这个项目提供了一套全面的 Terraform 模块文档生成系统。支持中英文文档生成以及集中化配置管理。",
             "description_en": "This project provides a comprehensive documentation generation system for Terraform modules. It supports both English and Chinese documentation generation with centralized configuration management."
         }
