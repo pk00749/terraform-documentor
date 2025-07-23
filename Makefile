@@ -6,7 +6,7 @@ all: docs
 # 生成所有模块的文档（使用Python脚本和英文配置）
 docs:
 	@echo "🚀 生成 Terraform 文档（英文版本）..."
-	@python3 generate-docs.py
+	@python3 generate-docs.py --config config/english-docs.yml
 
 # 使用Python脚本生成文档（可自定义配置）
 docs-python:
@@ -63,7 +63,7 @@ regenerate: docs
 status:
 	@echo "📊 模块状态检查..."
 	@echo "🐍 Python 脚本: $$([ -f "generate-docs.py" ] && echo "✅ generate-docs.py" || echo "❌ generate-docs.py 不存在")"
-	@echo "📋 英文配置: $$([ -f ".terraform-docs.yml" ] && echo "✅ .terraform-docs.yml" || echo "❌ .terraform-docs.yml 不存在")"
+	@echo "📋 英文配置: $$([ -f "config/english-docs.yml" ] && echo "✅ config/english-docs.yml" || echo "❌ config/english-docs.yml 不存在")"
 	@echo "📋 中文配置: $$([ -f "config/chinese-docs.yml" ] && echo "✅ config/chinese-docs.yml" || echo "❌ config/chinese-docs.yml 不存在")"
 	@echo ""
 	@for dir in modules/*/; do \
@@ -123,5 +123,5 @@ help:
 	@echo "  make docs-custom-dir MODULES_DIR=my-modules  # 指定模块目录"
 	@echo ""
 	@echo "💡 配置文件:"
-	@echo "  📄 .terraform-docs.yml       - 默认英文配置"
+	@echo "  📄 config/english-docs.yml   - 英文配置"
 	@echo "  📄 config/chinese-docs.yml   - 中文配置"
