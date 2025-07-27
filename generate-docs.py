@@ -61,39 +61,8 @@ class TerraformDocsGenerator:
                 return True
         except FileNotFoundError:
             pass
-        return False
 
-    def install_terraform_docs(self):
-        """尝试安装 terraform-docs"""
-        self.print_emoji("❌", "terraform-docs 未安装，正在尝试安装...", Colors.WARNING)
-
-        # 检查是否有 brew
-        try:
-            subprocess.run(['brew', '--version'], capture_output=True, check=True)
-            self.print_emoji("📦", "使用 Homebrew 安装 terraform-docs...")
-            result = subprocess.run(['brew', 'install', 'terraform-docs'],
-                                  capture_output=True, text=True)
-            if result.returncode == 0:
-                self.print_emoji("✅", "terraform-docs 安装成功", Colors.OKGREEN)
-                return True
-        except (FileNotFoundError, subprocess.CalledProcessError):
-            pass
-
-        # 检查是否有 apt-get
-        try:
-            subprocess.run(['apt-get', '--version'], capture_output=True, check=True)
-            self.print_emoji("📦", "使用 apt-get 安装 terraform-docs...")
-            result = subprocess.run(['sudo', 'apt-get', 'update'], capture_output=True)
-            if result.returncode == 0:
-                result = subprocess.run(['sudo', 'apt-get', 'install', '-y', 'terraform-docs'],
-                                      capture_output=True, text=True)
-                if result.returncode == 0:
-                    self.print_emoji("✅", "terraform-docs 安装成功", Colors.OKGREEN)
-                    return True
-        except (FileNotFoundError, subprocess.CalledProcessError):
-            pass
-
-        self.print_emoji("❌", "无法自动安装 terraform-docs，请手动安装", Colors.FAIL)
+        self.print_emoji("❌", "terraform-docs 未安装，请手动安装后再运行脚本", Colors.FAIL)
         return False
 
     def check_config_file_exists(self):
@@ -376,7 +345,7 @@ class TerraformDocsGenerator:
             return False
 
     def run(self):
-        """��执行函数"""
+        """主执行函数"""
         try:
             if self.sync_example_readmes:
                 self.print_emoji("🚀", "开始生成文档并同步到示例目录...", Colors.HEADER)
@@ -387,10 +356,9 @@ class TerraformDocsGenerator:
 
                     # 检查 terraform-docs 是否安装
                     if not self.check_terraform_docs_installed():
-                        if not self.install_terraform_docs():
-                            sys.exit(1)
+                        sys.exit(1)
 
-                    # 检查配置文��是否存在
+                    # 检查配置文件是否存在
                     if not self.check_config_file_exists():
                         sys.exit(1)
 
@@ -414,8 +382,7 @@ class TerraformDocsGenerator:
 
                 # 检查 terraform-docs 是否安装
                 if not self.check_terraform_docs_installed():
-                    if not self.install_terraform_docs():
-                        sys.exit(1)
+                    sys.exit(1)
 
                 # 检查配置文件是否存在
                 if not self.check_config_file_exists():
