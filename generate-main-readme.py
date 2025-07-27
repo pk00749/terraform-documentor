@@ -29,7 +29,7 @@ class Colors:
 class MainReadmeGenerator:
     """主目录 README.md 生成器"""
 
-    def __init__(self, modules_dir="modules", output_file="README.md"):
+    def __init__(self, modules_dir="example_alibabacloudstack", output_file="README.md"):
         self.modules_dir = modules_dir
         self.output_file = output_file
         self.project_info = {
@@ -234,11 +234,11 @@ class MainReadmeGenerator:
             return "暂无可用模块。"
 
         table = "| 模块名称 | 描述 | 输入参数 | 输出参数 | 资源数量 | 状态 |\n"
-        table += "|----------|------|----------|----------|----------|------|\n"
+        table += "|--------|------|----------|----------|----------|------|\n"
 
         for module in modules_info:
             status = "✅ 可用"
-            table += f"| [{module['name']}](modules/{module['name']}/) | {module['description']} | {module['inputs_count']} | {module['outputs_count']} | {module['resources_count']} | {status} |\n"
+            table += f"| [{module['name']}]({self.modules_dir}/{module['name']}/) | {module['description']} | {module['inputs_count']} | {module['outputs_count']} | {module['resources_count']} | {status} |\n"
 
         return table
 
@@ -252,7 +252,7 @@ class MainReadmeGenerator:
 
         for module in modules_info:
             status = "✅ Active"
-            table += f"| [{module['name']}](modules/{module['name']}/) | {module['description_en']} | {module['inputs_count']} | {module['outputs_count']} | {module['resources_count']} | {status} |\n"
+            table += f"| [{module['name']}]({self.modules_dir}/{module['name']}/) | {module['description_en']} | {module['inputs_count']} | {module['outputs_count']} | {module['resources_count']} | {status} |\n"
 
         return table
 
@@ -289,7 +289,7 @@ class MainReadmeGenerator:
         """生成英文 README"""
         module_table = self.generate_module_table_en(modules_info)
 
-        content = f"""# Terraform Modules Documentation Project
+        content = f"""# Terraform Share Modules
 
 This project contains the following Terraform modules:
 
@@ -365,8 +365,8 @@ def main():
     parser = argparse.ArgumentParser(description='生成主目录 README.md')
     parser.add_argument('--lang', choices=['cn', 'en', 'both'], default='en',
                        help='生成语言版本 (cn: 中文, en: 英文, both: 双语)')
-    parser.add_argument('--modules-dir', default='modules',
-                       help='模块目录路径 (默认: modules)')
+    parser.add_argument('--modules-dir', default='example_alibabacloudstack',
+                       help='模块目录路径 (默认: example_alibabacloudstack)')
     parser.add_argument('--output', default='README.md',
                        help='输出文件名 (默认: README.md)')
 
