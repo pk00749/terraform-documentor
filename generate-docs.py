@@ -4,6 +4,7 @@
 """
 Terraform 文档生成脚本 (Python版本)
 使用 terraform-docs 工具遍历多个模块
+同时支持为 example_alibabacloudstack 目录生成 README.md
 只使用 Python 标准库，无需额外安装依赖
 """
 
@@ -14,6 +15,7 @@ import argparse
 import glob
 from pathlib import Path
 import re
+import shutil
 
 
 class Colors:
@@ -31,12 +33,16 @@ class Colors:
 class TerraformDocsGenerator:
     """Terraform 文档生成器"""
 
-    def __init__(self, modules_dir="modules", config_file=".terraform-docs.yml"):
+    def __init__(self, modules_dir="modules", config_file=".terraform-docs.yml",
+                 example_dir="example_alibabacloudstack", sync_example_readmes=False):
         self.modules_dir = modules_dir
         self.config_file = config_file
+        self.example_dir = example_dir
+        self.sync_example_readmes = sync_example_readmes
         self.total_modules = 0
         self.successful_modules = 0
         self.failed_modules = 0
+        self.synced_readmes = 0
 
     def print_colored(self, message, color=Colors.ENDC):
         """打印彩色消息"""
@@ -48,14 +54,16 @@ class TerraformDocsGenerator:
 
     def check_terraform_docs_installed(self):
         """检查 terraform-docs 是否已安装"""
-        try:
-            result = subprocess.run(['terraform-docs', '--version'],
-                                  capture_output=True, text=True)
-            if result.returncode == 0:
-                return True
-        except FileNotFoundError:
-            pass
-        return False
+        if not self.sync_example_readmes:  # 如果只是同步README，不需要terraform-docs
+            try:
+                result = subprocess.run(['terraform-docs', '--version'],
+                                      capture_output=True, text=True)
+                if result.returncode == 0:
+                    return True
+            except FileNotFoundError:
+                pass
+            return False
+        return True
 
     def install_terraform_docs(self):
         """尝试安装 terraform-docs"""
@@ -212,6 +220,65 @@ class TerraformDocsGenerator:
                 self.print_emoji("❌", f"根目录文档生成异常: {str(e)}", Colors.FAIL)
                 self.failed_modules += 1
 
+    def sync_readme_to_example(self, modules_path, example_path):
+        """将模块的README.md同步到example目录"""
+        modules_readme = os.path.join(modules_path, 'README.md')
+        example_readme = os.path.join(example_path, 'README.md')
+
+        if not os.path.exists(modules_readme):
+            return False
+
+        if not os.path.exists(example_path):
+            return False
+
+        try:
+            shutil.copy2(modules_readme, example_readme)
+            return True
+        except Exception as e:
+            self.print_emoji("❌", f"同步README失败: {str(e)}", Colors.FAIL)
+            return False
+
+    def sync_all_example_readmes(self):
+        """同步所有模块的README.md到example目录"""
+        if not os.path.exists(self.example_dir):
+            self.print_emoji("❌", f"示例目录 '{self.example_dir}' 不存在", Colors.FAIL)
+            return False
+
+        self.print_emoji("🔄", f"开始同步README.md到 {self.example_dir}", Colors.OKCYAN)
+
+        synced_count = 0
+        total_count = 0
+
+        # 遍历example目录下的所有模块
+        for root, dirs, files in os.walk(self.example_dir):
+            # 跳过env_vars目录
+            if 'env_vars' in root:
+                continue
+
+            # 检查是否是模块目录（包含.tf文件）
+            tf_files = [f for f in files if f.endswith('.tf')]
+            if not tf_files:
+                continue
+
+            total_count += 1
+
+            # 构建对应的modules路径
+            rel_path = os.path.relpath(root, self.example_dir)
+            modules_path = os.path.join(self.modules_dir, 'alibabacloudstack', rel_path)
+
+            if os.path.exists(modules_path):
+                if self.sync_readme_to_example(modules_path, root):
+                    synced_count += 1
+                    self.print_emoji("✅", f"已同步 {rel_path} 的README.md", Colors.OKGREEN)
+                else:
+                    self.print_emoji("⚠️", f"同步 {rel_path} 的README.md失败", Colors.WARNING)
+            else:
+                self.print_emoji("⚠️", f"未找到对应的模块目录: {modules_path}", Colors.WARNING)
+
+        self.synced_readmes = synced_count
+        self.print_emoji("📊", f"README同步完成: {synced_count}/{total_count}", Colors.HEADER)
+        return True
+
     def scan_modules(self):
         """扫描并处理所有模块"""
         if not os.path.exists(self.modules_dir):
@@ -261,31 +328,38 @@ class TerraformDocsGenerator:
 
     def run(self):
         """主执行函数"""
-        self.print_emoji("🚀", "开始生成 Terraform 文档...", Colors.HEADER)
+        if self.sync_example_readmes:
+            self.print_emoji("🚀", "开始同步示例目录的README.md...", Colors.HEADER)
+            success = self.sync_all_example_readmes()
+            if success:
+                self.print_emoji("🎉", f"README同步完成！共同步了 {self.synced_readmes} 个文件", Colors.OKGREEN)
+            sys.exit(0 if success else 1)
+        else:
+            self.print_emoji("🚀", "开始生成 Terraform 文档...", Colors.HEADER)
 
-        # 检查 terraform-docs 是否安装
-        if not self.check_terraform_docs_installed():
-            if not self.install_terraform_docs():
+            # 检查 terraform-docs 是否安装
+            if not self.check_terraform_docs_installed():
+                if not self.install_terraform_docs():
+                    sys.exit(1)
+
+            # 检查配置文件是否存在
+            if not self.check_config_file_exists():
                 sys.exit(1)
 
-        # 检查配置文件是否存在
-        if not self.check_config_file_exists():
-            sys.exit(1)
+            # 清理本地配置文件
+            self.clean_local_configs()
 
-        # 清理本地配置文件
-        self.clean_local_configs()
+            # 扫描并处理模块
+            if not self.scan_modules():
+                sys.exit(1)
 
-        # 扫描并处理模块
-        if not self.scan_modules():
-            sys.exit(1)
+            # 处理根目录
+            self.process_root_directory()
 
-        # 处理根目录
-        self.process_root_directory()
+            # 输出统计结果
+            success = self.print_statistics()
 
-        # 输出统计结果
-        success = self.print_statistics()
-
-        sys.exit(0 if success else 1)
+            sys.exit(0 if success else 1)
 
 
 def main():
@@ -313,12 +387,19 @@ def main():
         help='指定模块目录 (默认: modules)'
     )
 
+    parser.add_argument(
+        '--sync-example-readmes',
+        action='store_true',
+        help='同步模块的 README.md 到example目录'
+    )
+
     args = parser.parse_args()
 
     # 创建生成器实例并运行
     generator = TerraformDocsGenerator(
         modules_dir=args.modules_dir,
-        config_file=args.config
+        config_file=args.config,
+        sync_example_readmes=args.sync_example_readmes
     )
 
     generator.run()
