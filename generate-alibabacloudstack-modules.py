@@ -418,8 +418,46 @@ module "{service}_{resource}" {{
 
     def _generate_example_variables_tf(self, path: Path, resource_data: Dict[str, Any]):
         """生成示例的variables.tf"""
-        # 直接复制模块的variables.tf
-        self._generate_variables_tf(path, resource_data)
+        variables_content = '# Variables for the example\n\n'
+
+        # 添加固定的三个通用参数
+        variables_content += '''# Provider configuration variables
+variable "access_key" {
+  type        = string
+  description = "The access key for AlibabaCloudStack"
+  sensitive   = true
+}
+
+variable "secret_key" {
+  type        = string
+  description = "The secret key for AlibabaCloudStack"
+  sensitive   = true
+}
+
+variable "resource_group_name" {
+  type        = string
+  description = "The resource group name"
+}
+
+# Resource-specific variables
+'''
+
+        # 添加资源特定的参数
+        for arg in resource_data['arguments']:
+            variables_content += f'variable "{arg["name"]}" {{\n'
+            variables_content += f'  type        = {arg["type"]}\n'
+            variables_content += f'  description = "{arg["description"]}"\n'
+
+            # 只有非必需参数且有默认值时才设置default
+            if not arg['required'] and arg['default'] is not None:
+                variables_content += f'  default     = {arg["default"]}\n'
+            elif not arg['required']:
+                variables_content += f'  default     = null\n'
+
+            variables_content += '}\n\n'
+
+        with open(path / 'variables.tf', 'w', encoding='utf-8') as f:
+            f.write(variables_content)
 
     @staticmethod
     def _generate_example_outputs_tf(path: Path, resource_data: Dict[str, Any]):
