@@ -26,9 +26,13 @@ docs-chinese:
 docs-custom-dir:
 	@echo "🚀 使用自定义模块目录生成文档..."
 	@if [ -n "$(MODULES_DIR)" ]; then \
-		python3 generate-docs.py --modules-dir $(MODULES_DIR); \
+		if [ -n "$(CONFIG)" ]; then \
+			python3 generate-docs.py --modules-dir $(MODULES_DIR) --config $(CONFIG); \
+		else \
+			python3 generate-docs.py --modules-dir $(MODULES_DIR) --config config/english-docs.yml; \
+		fi \
 	else \
-		echo "❌ 请使用 make docs-custom-dir MODULES_DIR=path/to/modules"; \
+		echo "❌ 请使用 make docs-custom-dir MODULES_DIR=path/to/modules [CONFIG=config/file.yml]"; \
 	fi
 
 # 安装 terraform-docs

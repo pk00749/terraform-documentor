@@ -264,7 +264,13 @@ class TerraformDocsGenerator:
 
             # 构建对应的modules路径
             rel_path = os.path.relpath(root, self.example_dir)
-            modules_path = os.path.join(self.modules_dir, 'alibabacloudstack', rel_path)
+            # 根据modules_dir的配置来构建正确的路径
+            if 'alibabacloudstack' in self.modules_dir:
+                # 如果modules_dir已经包含alibabacloudstack，直接使用
+                modules_path = os.path.join(self.modules_dir, rel_path)
+            else:
+                # 如果modules_dir是通用的modules目录，则添加alibabacloudstack
+                modules_path = os.path.join(self.modules_dir, 'alibabacloudstack', rel_path)
 
             if os.path.exists(modules_path):
                 if self.sync_readme_to_example(modules_path, root):
@@ -287,6 +293,18 @@ class TerraformDocsGenerator:
 
         self.print_emoji("🔍", f"扫描模块目录: {self.modules_dir}", Colors.OKCYAN)
         self.print_emoji("📋", f"使用全局配置文件: {self.config_file}", Colors.OKCYAN)
+
+        # 检查指定目录本身是否是一个模块
+        if self.has_terraform_files(self.modules_dir):
+            self.print_emoji("📂", f"检测到单个模块: {os.path.basename(self.modules_dir)}", Colors.OKBLUE)
+            self.total_modules += 1
+
+            if self.generate_module_docs(self.modules_dir):
+                self.successful_modules += 1
+            else:
+                self.failed_modules += 1
+
+            return True
 
         # 获取所有模块目录
         module_dirs = [d for d in glob.glob(os.path.join(self.modules_dir, "*"))
@@ -383,8 +401,8 @@ def main():
 
     parser.add_argument(
         '--modules-dir',
-        default='modules',
-        help='指定模块目录 (默认: modules)'
+        default='modules/alibabacloudstack',
+        help='指定模块目录 (默认: modules/alibabacloudstack)'
     )
 
     parser.add_argument(
