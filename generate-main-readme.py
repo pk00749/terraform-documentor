@@ -163,16 +163,70 @@ class MainReadmeGenerator:
             self.print_emoji("❌", f"模块目录 {self.modules_dir} 不存在", Colors.FAIL)
             return modules_info
 
-        # 遍历模块目录
-        for item in os.listdir(self.modules_dir):
-            module_path = os.path.join(self.modules_dir, item)
-            if os.path.isdir(module_path):
-                self.print_emoji("📂", f"扫描模块: {item}", Colors.OKBLUE)
-                module_info = self.get_module_info(module_path)
-                if module_info:
-                    modules_info.append(module_info)
+        # 递归遍历模块目录
+        self.print_emoji("🔍", f"开始扫描目录: {self.modules_dir}", Colors.OKCYAN)
+        modules_info = self._scan_directory_recursively(self.modules_dir)
 
         return sorted(modules_info, key=lambda x: x['name'])
+
+    def _scan_directory_recursively(self, directory, base_path=""):
+        """递归扫描目录寻找Terraform模块"""
+        modules_info = []
+
+        try:
+            for item in os.listdir(directory):
+                item_path = os.path.join(directory, item)
+
+                # 跳过隐藏文件和特殊目录
+                if item.startswith('.') or item == '__pycache__' or item == 'env_vars':
+                    continue
+
+                if os.path.isdir(item_path):
+                    # 检查当前目录是否是一个Terraform模块
+                    if self._is_terraform_module(item_path):
+                        # 构建模块的相对路径名称
+                        if base_path:
+                            module_name = f"{base_path}/{item}"
+                        else:
+                            module_name = item
+
+                        self.print_emoji("📂", f"发现模块: {module_name}", Colors.OKBLUE)
+                        module_info = self.get_module_info(item_path)
+                        if module_info:
+                            # 更新模块名称为包含路径的名称
+                            module_info['name'] = module_name
+                            module_info['relative_path'] = module_name
+                            modules_info.append(module_info)
+                    else:
+                        # 如果不是模块，继续递归扫描子目录
+                        new_base_path = f"{base_path}/{item}" if base_path else item
+                        sub_modules = self._scan_directory_recursively(item_path, new_base_path)
+                        modules_info.extend(sub_modules)
+
+        except PermissionError:
+            self.print_emoji("⚠️", f"无权限访问目录: {directory}", Colors.WARNING)
+        except Exception as e:
+            self.print_emoji("⚠️", f"扫描目录时出错 {directory}: {str(e)}", Colors.WARNING)
+
+        return modules_info
+
+    def _is_terraform_module(self, directory):
+        """检查目录是否是一个Terraform模块"""
+        # 检查是否有必要的Terraform文件
+        tf_files = ['main.tf', 'variables.tf', 'outputs.tf']
+        for tf_file in tf_files:
+            if os.path.exists(os.path.join(directory, tf_file)):
+                return True
+
+        # 也检查是否有任何.tf文件
+        try:
+            for item in os.listdir(directory):
+                if item.endswith('.tf'):
+                    return True
+        except (PermissionError, OSError):
+            pass
+
+        return False
 
     def generate_module_table_cn(self, modules_info):
         """生成中文模块表格"""
@@ -309,7 +363,7 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description='生成主目录 README.md')
-    parser.add_argument('--lang', choices=['cn', 'en', 'both'], default='both',
+    parser.add_argument('--lang', choices=['cn', 'en', 'both'], default='en',
                        help='生成语言版本 (cn: 中文, en: 英文, both: 双语)')
     parser.add_argument('--modules-dir', default='modules',
                        help='模块目录路径 (默认: modules)')
