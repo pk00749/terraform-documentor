@@ -259,6 +259,7 @@ class ModuleGenerator:
         self._generate_example_outputs_tf(example_path, resource_data)
         self._generate_example_versions_tf(example_path)
         self._generate_tfvars(example_path, resource_data)
+        self._generate_provider_tf(example_path)
 
         logger.info(f"成功生成模块: {module_path}")
         return True
@@ -378,7 +379,24 @@ class ModuleGenerator:
         with open(path / 'versions.tf', 'w', encoding='utf-8') as f:
             f.write(versions_content)
 
-    def _generate_example_main_tf(self, path: Path, service: str, resource: str, resource_data: Dict[str, Any]):
+    def _generate_provider_tf(self, path: Path):
+        """生成provider.tf"""
+        provider_content = '''provider "alibabacloudstack" {
+  access_key = var.access_key
+  secret_key = var.secret_key
+  region =  "cn-hk-env00-d01"
+  proxy = "http://100.1.1.1:5001"
+  insecure = true
+  resource_group_set_name= var.resource_group_name
+  domain = "server.asapi.cn-xxxxx-envXX-d01.intra.envXX.shuguang.com/asapi/v3"
+  protocol = "HTTP"
+}
+'''
+        with open(path / 'provider.tf', 'w', encoding='utf-8') as f:
+            f.write(provider_content)
+
+    @staticmethod
+    def _generate_example_main_tf(path: Path, service: str, resource: str, resource_data: Dict[str, Any]):
         """生成示例的main.tf"""
         module_path = f"../../../modules/alibabacloudstack/{service}/{service}_{resource}"
 
@@ -403,7 +421,8 @@ module "{service}_{resource}" {{
         # 直接复制模块的variables.tf
         self._generate_variables_tf(path, resource_data)
 
-    def _generate_example_outputs_tf(self, path: Path, resource_data: Dict[str, Any]):
+    @staticmethod
+    def _generate_example_outputs_tf(path: Path, resource_data: Dict[str, Any]):
         """生成示例的outputs.tf"""
         resource_name = resource_data['resource_info']['resource_name']
 
@@ -436,7 +455,8 @@ output "id" {{
         """生成示例的versions.tf"""
         self._generate_versions_tf(path)
 
-    def _generate_tfvars(self, path: Path, resource_data: Dict[str, Any]):
+    @staticmethod
+    def _generate_tfvars(path: Path, resource_data: Dict[str, Any]):
         """生成tfvars文件"""
         resource_name = resource_data['resource_info']['resource_name']
 
