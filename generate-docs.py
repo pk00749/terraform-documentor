@@ -54,16 +54,14 @@ class TerraformDocsGenerator:
 
     def check_terraform_docs_installed(self):
         """检查 terraform-docs 是否已安装"""
-        if not self.sync_example_readmes:  # 如果只是同步README，不需要terraform-docs
-            try:
-                result = subprocess.run(['terraform-docs', '--version'],
-                                      capture_output=True, text=True)
-                if result.returncode == 0:
-                    return True
-            except FileNotFoundError:
-                pass
-            return False
-        return True
+        try:
+            result = subprocess.run(['terraform-docs', '--version'],
+                                  capture_output=True, text=True)
+            if result.returncode == 0:
+                return True
+        except FileNotFoundError:
+            pass
+        return False
 
     def install_terraform_docs(self):
         """尝试安装 terraform-docs"""
@@ -225,17 +223,25 @@ class TerraformDocsGenerator:
         modules_readme = os.path.join(modules_path, 'README.md')
         example_readme = os.path.join(example_path, 'README.md')
 
+        # 检查源README.md是否存在
         if not os.path.exists(modules_readme):
+            self.print_emoji("⚠️", f"源README.md不存在: {modules_readme}", Colors.WARNING)
+            self.print_emoji("💡", f"请先为模块生成README.md文档", Colors.WARNING)
             return False
 
+        # 检查目标目录是否存在
         if not os.path.exists(example_path):
+            self.print_emoji("⚠️", f"目标示例目录不存在: {example_path}", Colors.WARNING)
             return False
 
         try:
+            # 执行同步操作
+            self.print_emoji("📋", f"正在同步: {modules_readme} -> {example_readme}", Colors.OKCYAN)
             shutil.copy2(modules_readme, example_readme)
+            self.print_emoji("✅", f"同步成功: {os.path.basename(example_path)}", Colors.OKGREEN)
             return True
         except Exception as e:
-            self.print_emoji("❌", f"同步README失败: {str(e)}", Colors.FAIL)
+            self.print_emoji("❌", f"同步失败: {str(e)}", Colors.FAIL)
             return False
 
     def sync_all_example_readmes(self):
@@ -245,48 +251,73 @@ class TerraformDocsGenerator:
             return False
 
         self.print_emoji("🔄", f"开始同步README.md到 {self.example_dir}", Colors.OKCYAN)
+        self.print_emoji("📂", f"从模块目录: {self.modules_dir}", Colors.OKCYAN)
 
         synced_count = 0
         total_count = 0
 
-        # 遍历example目录下的所有模块
-        for root, dirs, files in os.walk(self.example_dir):
-            # 跳过env_vars目录
-            if 'env_vars' in root:
-                continue
+        # 检查是否指定了具体的单个模块目录
+        if self.has_terraform_files(self.modules_dir):
+            # 处理单个模块的情况
+            self.print_emoji("📂", f"处理单个模块: {os.path.basename(self.modules_dir)}", Colors.OKBLUE)
 
-            # 检查是否是模块目录（包含.tf文件）
-            tf_files = [f for f in files if f.endswith('.tf')]
-            if not tf_files:
-                continue
+            # 计算相对路径 - 从modules/alibabacloudstack开始
+            if 'modules/alibabacloudstack' in self.modules_dir:
+                # 提取alibabacloudstack之后的路径部分
+                rel_path = self.modules_dir.split('modules/alibabacloudstack/')[-1]
+                example_path = os.path.join(self.example_dir, rel_path)
 
-            total_count += 1
-
-            # 构建对应的modules路径
-            rel_path = os.path.relpath(root, self.example_dir)
-            # 根据modules_dir的配置来构建正确的路径
-            if 'alibabacloudstack' in self.modules_dir:
-                # 如果modules_dir已经包含alibabacloudstack，直接使用
-                modules_path = os.path.join(self.modules_dir, rel_path)
-            else:
-                # 如果modules_dir是通用的modules目录，则添加alibabacloudstack
-                modules_path = os.path.join(self.modules_dir, 'alibabacloudstack', rel_path)
-
-            if os.path.exists(modules_path):
-                if self.sync_readme_to_example(modules_path, root):
-                    synced_count += 1
-                    self.print_emoji("✅", f"已同步 {rel_path} 的README.md", Colors.OKGREEN)
+                if os.path.exists(example_path):
+                    total_count = 1
+                    if self.sync_readme_to_example(self.modules_dir, example_path):
+                        synced_count = 1
+                        self.print_emoji("✅", f"已同步 {rel_path} 的README.md", Colors.OKGREEN)
+                    else:
+                        self.print_emoji("⚠️", f"同步 {rel_path} 的README.md失败", Colors.WARNING)
                 else:
-                    self.print_emoji("⚠️", f"同步 {rel_path} 的README.md失败", Colors.WARNING)
+                    self.print_emoji("⚠️", f"未找到��应的示例目录: {example_path}", Colors.WARNING)
             else:
-                self.print_emoji("⚠️", f"未找到对应的模块目录: {modules_path}", Colors.WARNING)
+                self.print_emoji("⚠️", f"指定的模块目录格式不正确，应该在 modules/alibabacloudstack/ 下", Colors.WARNING)
+        else:
+            # 处理多个模块的情况（原有逻辑）
+            # 遍历example目录下的所有模块
+            for root, dirs, files in os.walk(self.example_dir):
+                # 跳过env_vars目录
+                if 'env_vars' in root:
+                    continue
+
+                # 检查是否是模块目录（包含.tf文件）
+                tf_files = [f for f in files if f.endswith('.tf')]
+                if not tf_files:
+                    continue
+
+                total_count += 1
+
+                # 构���对应的modules路径
+                rel_path = os.path.relpath(root, self.example_dir)
+                # 根据modules_dir的配置来构建正确的路径
+                if 'alibabacloudstack' in self.modules_dir:
+                    # 如果modules_dir已经包含alibabacloudstack，直接使用
+                    modules_path = os.path.join(self.modules_dir, rel_path)
+                else:
+                    # 如果modules_dir是通用的modules目录，则添加alibabacloudstack
+                    modules_path = os.path.join(self.modules_dir, 'alibabacloudstack', rel_path)
+
+                if os.path.exists(modules_path):
+                    if self.sync_readme_to_example(modules_path, root):
+                        synced_count += 1
+                        self.print_emoji("✅", f"已同步 {rel_path} 的README.md", Colors.OKGREEN)
+                    else:
+                        self.print_emoji("⚠️", f"同步 {rel_path} 的README.md失败", Colors.WARNING)
+                else:
+                    self.print_emoji("⚠️", f"未找到对应的模块目录: {modules_path}", Colors.WARNING)
 
         self.synced_readmes = synced_count
         self.print_emoji("📊", f"README同步完成: {synced_count}/{total_count}", Colors.HEADER)
         return True
 
     def scan_modules(self):
-        """扫描并处理所有模块"""
+        """扫描并处理��有模块"""
         if not os.path.exists(self.modules_dir):
             self.print_emoji("❌", f"模块目录 '{self.modules_dir}' 不存在", Colors.FAIL)
             return False
@@ -328,7 +359,7 @@ class TerraformDocsGenerator:
         return True
 
     def print_statistics(self):
-        """输出统计结果"""
+        """输出统��结果"""
         print("=" * 20)
         self.print_emoji("📊", "生成结果统计:", Colors.HEADER)
         print(f"   总模块数: {self.total_modules}")
@@ -345,39 +376,70 @@ class TerraformDocsGenerator:
             return False
 
     def run(self):
-        """主执行函数"""
-        if self.sync_example_readmes:
-            self.print_emoji("🚀", "开始同步示例目录的README.md...", Colors.HEADER)
-            success = self.sync_all_example_readmes()
-            if success:
-                self.print_emoji("🎉", f"README同步完成！共同步了 {self.synced_readmes} 个文件", Colors.OKGREEN)
-            sys.exit(0 if success else 1)
-        else:
-            self.print_emoji("🚀", "开始生成 Terraform 文档...", Colors.HEADER)
+        """��执行函数"""
+        try:
+            if self.sync_example_readmes:
+                self.print_emoji("🚀", "开始生成文档并同步到示例目录...", Colors.HEADER)
 
-            # 检查 terraform-docs 是否安装
-            if not self.check_terraform_docs_installed():
-                if not self.install_terraform_docs():
+                # 如果指定了modules_dir，先生成该模块的文档
+                if self.modules_dir != "modules/alibabacloudstack":
+                    self.print_emoji("📝", "第一步：生成模块文档...", Colors.OKCYAN)
+
+                    # 检查 terraform-docs 是否安装
+                    if not self.check_terraform_docs_installed():
+                        if not self.install_terraform_docs():
+                            sys.exit(1)
+
+                    # 检查配置文��是否存在
+                    if not self.check_config_file_exists():
+                        sys.exit(1)
+
+                    # 清理本地配置文件
+                    self.clean_local_configs()
+
+                    # 扫描并处理模块
+                    if not self.scan_modules():
+                        sys.exit(1)
+
+                # 第二步：同步README.md到示例目录
+                self.print_emoji("🔄", "第二步：同步README.md到示例目录...", Colors.OKCYAN)
+                success = self.sync_all_example_readmes()
+                if success:
+                    self.print_emoji("🎉", f"文档生成和同步完成！共同步了 {self.synced_readmes} 个文件", Colors.OKGREEN)
+                else:
+                    self.print_emoji("❌", "同步失败", Colors.FAIL)
+                sys.exit(0 if success else 1)
+            else:
+                self.print_emoji("🚀", "开始生成 Terraform 文档...", Colors.HEADER)
+
+                # 检查 terraform-docs 是否安装
+                if not self.check_terraform_docs_installed():
+                    if not self.install_terraform_docs():
+                        sys.exit(1)
+
+                # 检查配置文件是否存在
+                if not self.check_config_file_exists():
                     sys.exit(1)
 
-            # 检查配置文件是否存在
-            if not self.check_config_file_exists():
-                sys.exit(1)
+                # 清理本地配置文件
+                self.clean_local_configs()
 
-            # 清理本地配置文件
-            self.clean_local_configs()
+                # 扫描并处理模块
+                if not self.scan_modules():
+                    sys.exit(1)
 
-            # 扫描并处理模块
-            if not self.scan_modules():
-                sys.exit(1)
+                # 处理根目录
+                self.process_root_directory()
 
-            # 处理根目录
-            self.process_root_directory()
+                # 输出统计结果
+                success = self.print_statistics()
 
-            # 输出统计结果
-            success = self.print_statistics()
-
-            sys.exit(0 if success else 1)
+                sys.exit(0 if success else 1)
+        except Exception as e:
+            self.print_emoji("❌", f"脚本执行出现异常: {str(e)}", Colors.FAIL)
+            import traceback
+            traceback.print_exc()
+            sys.exit(1)
 
 
 def main():
